@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_1/Register_page.dart';
 import 'package:flutter_test_1/home_page.dart';
@@ -10,7 +11,57 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
+final _formKey = GlobalKey<FormState>();
+TextEditingController loginController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
+
 class _LoginPageState extends State<LoginPage> {
+  void validateEmail(String val) {
+    RegExp regexLogin = RegExp(
+        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+    if (val.isEmpty) {
+      setState(() {
+        _errorMessageLogin = "Email can not be empty";
+      });
+    } else if (!regexLogin.hasMatch(val)) {
+      setState(() {
+        _errorMessageLogin = "Invalid Email Address";
+      });
+    } else {
+      setState(() {
+        _errorMessageLogin = "";
+      });
+    }
+  }
+
+  void validatePassword(String val) {
+    RegExp regexPassword =
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{6,}$');
+
+    if (val.isEmpty) {
+      setState(() {
+        _errorMessagePassword = "Password can not be empty";
+      });
+    } else if (!regexPassword.hasMatch(val)) {
+      setState(() {
+        _errorMessagePassword = "Invalid Password";
+      });
+    } else {
+      setState(() {
+        _errorMessagePassword = "";
+      });
+    }
+  }
+
+  String _errorMessageLogin = '';
+  String _errorMessagePassword = '';
+  @override
+  void dispose() {
+    loginController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final logo = Padding(
@@ -26,6 +77,10 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     final email = TextFormField(
+      onChanged: (val) {
+        validateEmail(val);
+      },
+      controller: loginController,
       keyboardType: TextInputType.emailAddress,
       autofocus: false,
       decoration: InputDecoration(
@@ -44,6 +99,10 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     final password = TextFormField(
+      onChanged: (val) {
+        validatePassword(val);
+      },
+      controller: passwordController,
       autofocus: false,
       obscureText: true,
       decoration: InputDecoration(
@@ -61,44 +120,65 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
 
-    final loginButton = Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        gradient: const LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [
-            Color(0xFF4AD1C5),
-            Color(0xFF239CC6),
-          ],
-        ),
-        boxShadow: const [
-          BoxShadow(
-            color: Color.fromRGBO(48, 173, 198, 0.24),
-          ),
-        ],
-      ),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          disabledForegroundColor: Colors.transparent.withOpacity(0.38),
-          disabledBackgroundColor: Colors.transparent.withOpacity(0.12),
-          shadowColor: Colors.transparent,
-        ),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const HomePage(),
+    final loginButton = Column(
+      children: [
+        Container(
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient: const LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                Color(0xFF4AD1C5),
+                Color(0xFF239CC6),
+              ],
             ),
-          );
-        },
-        child: const Text('Войти',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            )),
-      ),
+            boxShadow: const [
+              BoxShadow(
+                color: Color.fromRGBO(48, 173, 198, 0.24),
+              ),
+            ],
+          ),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              disabledForegroundColor: Colors.transparent.withOpacity(0.38),
+              disabledBackgroundColor: Colors.transparent.withOpacity(0.12),
+              shadowColor: Colors.transparent,
+            ),
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomePage(),
+                  ),
+                );
+              }
+            },
+            child: const Text('Войти',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                )),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
+          child: Text(
+            _errorMessageLogin,
+            style: const TextStyle(color: Colors.red),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
+          child: Text(
+            _errorMessagePassword,
+            style: const TextStyle(color: Colors.red),
+          ),
+        ),
+      ],
     );
 
     const text = Center(
@@ -188,26 +268,29 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child: ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-          children: <Widget>[
-            logo,
-            const SizedBox(height: 60.0),
-            email,
-            const SizedBox(height: 16.0),
-            password,
-            const SizedBox(height: 16.0),
-            loginButton,
-            const SizedBox(height: 39.0),
-            text,
-            const SizedBox(height: 26.0),
-            otherAuth,
-            const SizedBox(height: 20.0),
-            forgotLabel,
-            const SizedBox(height: 38.0),
-            register
-          ],
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            children: <Widget>[
+              logo,
+              const SizedBox(height: 60.0),
+              email,
+              const SizedBox(height: 16.0),
+              password,
+              const SizedBox(height: 16.0),
+              loginButton,
+              const SizedBox(height: 9.0),
+              text,
+              const SizedBox(height: 26.0),
+              otherAuth,
+              const SizedBox(height: 20.0),
+              forgotLabel,
+              const SizedBox(height: 38.0),
+              register
+            ],
+          ),
         ),
       ),
     );
