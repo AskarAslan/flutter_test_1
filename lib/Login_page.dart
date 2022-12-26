@@ -1,7 +1,11 @@
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_test_1/Register_page.dart';
+import 'package:flutter_test_1/auth_service.dart';
 import 'package:flutter_test_1/home_page.dart';
+import 'package:flutter_test_1/language_cubit.dart';
+import 'package:flutter_test_1/news_compilation.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,11 +15,13 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-final _formKey = GlobalKey<FormState>();
-TextEditingController loginController = TextEditingController();
-TextEditingController passwordController = TextEditingController();
-
 class _LoginPageState extends State<LoginPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  TextEditingController loginController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  List<String> items = ['Ru', 'Kk', 'En'];
+  Map<String, String> items2 = {"Ru": "ru", "Kk": "kk", "En": "en"};
+  String? selectedItem = 'Ru';
   void validateEmail(String val) {
     RegExp regexLogin = RegExp(
         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
@@ -56,16 +62,70 @@ class _LoginPageState extends State<LoginPage> {
   String _errorMessageLogin = '';
   String _errorMessagePassword = '';
   @override
+  void initState() {
+    loginController = TextEditingController();
+    passwordController = TextEditingController();
+    super.initState();
+  }
+
+  @override
   void dispose() {
-    loginController.dispose();
-    passwordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final dropdown = Align(
+      alignment: Alignment.topRight,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 50, right: 16),
+        child: SizedBox(
+          height: 64,
+          width: 64,
+          child: DropdownButtonFormField<String>(
+            borderRadius: BorderRadius.circular(12),
+            icon: const Visibility(
+                visible: false, child: Icon(Icons.arrow_downward)),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: const Color(0xffF5F7F6),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(6),
+                borderSide: const BorderSide(
+                  width: 0,
+                  style: BorderStyle.none,
+                ),
+              ),
+            ),
+            value: selectedItem,
+            items: items.map(
+              (item) {
+                return DropdownMenuItem<String>(
+                    value: item,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        item,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ));
+              },
+            ).toList(),
+            onChanged: (item) {
+              setState(() {
+                selectedItem = item;
+                context
+                    .read<LanguageCubit>()
+                    .changeLang(context, items2[item]!);
+              });
+            },
+          ),
+        ),
+      ),
+    );
+
     final logo = Padding(
-      padding: const EdgeInsets.only(left: 110, right: 110, top: 100),
+      padding: const EdgeInsets.only(left: 110, right: 110),
       child: SizedBox(
         width: 100,
         height: 100,
@@ -152,7 +212,7 @@ class _LoginPageState extends State<LoginPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const HomePage(),
+                    builder: (context) => const NewsCompilation(),
                   ),
                 );
               }
@@ -181,10 +241,11 @@ class _LoginPageState extends State<LoginPage> {
       ],
     );
 
-    const text = Center(
+    final text = Center(
       child: Text(
-        'Или войдите через другие сервисы',
-        style: TextStyle(color: Color(0xFF081320), fontSize: 16),
+        AppLocalizations.of(context)!.settings,
+        // 'Или войдите через другие сервисы',
+        style: const TextStyle(color: Color(0xFF081320), fontSize: 16),
       ),
     );
 
@@ -194,6 +255,7 @@ class _LoginPageState extends State<LoginPage> {
         ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: Container(
+            width: 169,
             color: const Color(0xffF5F7F6),
             child: Padding(
               padding: const EdgeInsets.only(
@@ -216,24 +278,30 @@ class _LoginPageState extends State<LoginPage> {
         const SizedBox(width: 20.0),
         ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: Container(
-            color: const Color(0xffF5F7F6),
-            child: Padding(
-              padding: const EdgeInsets.only(
-                  left: 29, right: 30, top: 10, bottom: 10),
-              child: Row(
-                children: <Widget>[
-                  Image.asset(
-                    ("assets/flat-color-icons_google.png"),
-                  ),
-                  const SizedBox(width: 8.0),
-                  const Text(
-                    'Google',
-                    style: TextStyle(color: Color(0xFF081320), fontSize: 16),
-                  )
-                ],
+          child: GestureDetector(
+            child: Container(
+              width: 169,
+              color: const Color(0xffF5F7F6),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 29, right: 30, top: 10, bottom: 10),
+                child: Row(
+                  children: <Widget>[
+                    Image.asset(
+                      ("assets/flat-color-icons_google.png"),
+                    ),
+                    const SizedBox(width: 8.0),
+                    const Text(
+                      'Google',
+                      style: TextStyle(color: Color(0xFF081320), fontSize: 16),
+                    )
+                  ],
+                ),
               ),
             ),
+            onTap: () {
+              AuthService().signInWithGoogle();
+            },
           ),
         ),
       ],
@@ -255,12 +323,11 @@ class _LoginPageState extends State<LoginPage> {
           style: TextStyle(color: Color(0xFF44C9C5), fontSize: 16),
         ),
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const RegisterPage(),
-            ),
-          );
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => const RegisterPage(),
+              ),
+              (Route<dynamic> route) => false);
         },
       ),
     );
@@ -270,25 +337,31 @@ class _LoginPageState extends State<LoginPage> {
       body: Center(
         child: Form(
           key: _formKey,
-          child: ListView(
-            shrinkWrap: true,
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-            children: <Widget>[
-              logo,
-              const SizedBox(height: 60.0),
-              email,
-              const SizedBox(height: 16.0),
-              password,
-              const SizedBox(height: 16.0),
-              loginButton,
-              const SizedBox(height: 9.0),
-              text,
-              const SizedBox(height: 26.0),
-              otherAuth,
-              const SizedBox(height: 20.0),
-              forgotLabel,
-              const SizedBox(height: 38.0),
-              register
+          child: Column(
+            children: [
+              dropdown,
+              ListView(
+                shrinkWrap: true,
+                padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                children: <Widget>[
+                  const SizedBox(height: 19.0),
+                  logo,
+                  const SizedBox(height: 60.0),
+                  email,
+                  const SizedBox(height: 16.0),
+                  password,
+                  const SizedBox(height: 16.0),
+                  loginButton,
+                  const SizedBox(height: 9.0),
+                  text,
+                  const SizedBox(height: 26.0),
+                  otherAuth,
+                  const SizedBox(height: 20.0),
+                  forgotLabel,
+                  const SizedBox(height: 38.0),
+                  register
+                ],
+              ),
             ],
           ),
         ),

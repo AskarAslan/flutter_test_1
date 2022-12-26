@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_1/Login_page.dart';
 import 'package:flutter_test_1/home_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -98,26 +99,36 @@ class _RegisterPageState extends State<RegisterPage> {
     );
 
     final chechBox = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Checkbox(
-          fillColor: MaterialStateProperty.resolveWith<Color>(
-              (Set<MaterialState> states) {
-            if (states.contains(MaterialState.disabled)) {
-              return const Color(0xff44C9C5);
-            }
-            return const Color(0xff44C9C5);
-          }),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-          checkColor: Colors.white,
-          value: isChecked,
-          onChanged: (bool? value) {
-            setState(() {
-              isChecked = value!;
-            });
-          },
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: SizedBox(
+            width: 24,
+            height: 24,
+            child: Checkbox(
+              fillColor: MaterialStateProperty.resolveWith<Color>(
+                  (Set<MaterialState> states) {
+                if (states.contains(MaterialState.disabled)) {
+                  return const Color(0xff44C9C5);
+                }
+                return const Color(0xff44C9C5);
+              }),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6)),
+              checkColor: Colors.white,
+              value: isChecked,
+              onChanged: (bool? value) {
+                setState(() {
+                  isChecked = value!;
+                });
+              },
+            ),
+          ),
         ),
-        const SizedBox(height: 8.0),
+        const SizedBox(
+          width: 8,
+        ),
         Flexible(
           child: RichText(
             text: TextSpan(
@@ -125,24 +136,52 @@ class _RegisterPageState extends State<RegisterPage> {
                 style: const TextStyle(color: Color(0xff0C1827), fontSize: 12),
                 children: <TextSpan>[
                   TextSpan(
-                      text:
-                          ' Пользовательского солашения и Политики конфиденциальности',
-                      style: const TextStyle(
-                          color: Color(0xff44C9C5), fontSize: 12),
-                      recognizer: TapGestureRecognizer()..onTap = () {})
+                    text: ' Пользовательского соuлашения',
+                    style:
+                        const TextStyle(color: Color(0xff44C9C5), fontSize: 12),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
+                        Uri url = Uri.parse('https://masnaget.digital/');
+                        if (await launchUrl(url)) {
+                        } else {
+                          throw "Could not launch $url";
+                        }
+                      },
+                  ),
+                  TextSpan(
+                    text: ' и ',
+                    style:
+                        const TextStyle(color: Color(0xff0C1827), fontSize: 12),
+                    recognizer: TapGestureRecognizer()..onTap = () async {},
+                  ),
+                  TextSpan(
+                    text: 'Политики конфиденциальности',
+                    style:
+                        const TextStyle(color: Color(0xff44C9C5), fontSize: 12),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
+                        Uri url = Uri.parse('https://masnaget.digital/');
+                        if (await launchUrl(url)) {
+                        } else {
+                          throw "Could not launch $url";
+                        }
+                      },
+                  ),
                 ]),
           ),
         ),
-        // const Flexible(
-        //   child: Text(
-        //       "Я принимаю условия Пользовательского солашения и Политики конфиденциальности",
-        //       style: TextStyle(
-        //         fontSize: 12,
-        //       )),
-        // )
       ],
     );
 
+// _launchURL() async {
+//   const url = 'https://flutter.io';
+//   final uri = Uri.parse(url);
+//   if (await canLaunchUrl(uri)) {
+//     await launchUrl(uri);
+//   } else {
+//     throw 'Could not launch $url';
+//   }
+// }
     final register = Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -216,7 +255,7 @@ class _RegisterPageState extends State<RegisterPage> {
             passwordConfirm,
             const SizedBox(height: 20.0),
             chechBox,
-            const SizedBox(height: 113.0),
+            const SizedBox(height: 101.0),
             register,
             const SizedBox(height: 11.0),
             login

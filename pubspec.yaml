@@ -36,7 +36,16 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  email_validator: ^2.1.17
+  flutter_bloc: ^8.1.1
+  flutter_screenutil: ^5.6.0
+  hive_flutter: ^1.1.0
+  firebase_core: ^2.1.1
+  firebase_auth: ^4.1.0
+  google_sign_in: ^5.4.2
+  url_launcher: ^6.1.7
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.17.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -53,19 +62,19 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  generate: true
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-
+  
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/
     - assets/Untitled/
     - assets/Untitled1/
     - assets/Untitled2/
-
+  
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

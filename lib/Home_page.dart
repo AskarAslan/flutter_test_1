@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_1/auth_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -43,7 +44,7 @@ class _HomePageState extends State<HomePage> {
           child: Icon(
             Icons.search,
             color: Color.fromRGBO(60, 60, 67, 0.6),
-          ), // icon is 48px widget.
+          ),
         ),
         filled: true,
         fillColor: const Color(0xffF5F7F6),
@@ -161,11 +162,11 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Image.asset(
                   "assets/Untitled/Ellipse 119.png",
-                  height: 104,
-                  width: 104,
+                  height: 80,
+                  width: 80,
                   fit: BoxFit.cover,
                 ),
-                const SizedBox(height: 4),
+                // const SizedBox(height: 4),
                 const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
@@ -197,10 +198,23 @@ class _HomePageState extends State<HomePage> {
     );
 
     return Scaffold(
+      appBar: AppBar(
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(
+              Icons.exit_to_app,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              AuthService().signOut();
+            },
+          )
+        ],
+      ),
       backgroundColor: Colors.white,
       body: Center(
         child: ListView(
-          padding: const EdgeInsets.only(top: 56, left: 16.0, right: 16.0),
+          padding: const EdgeInsets.only(top: 16, left: 16.0, right: 16.0),
           children: <Widget>[
             body,
           ],

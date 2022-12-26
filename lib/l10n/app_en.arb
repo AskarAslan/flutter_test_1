@@ -1,0 +1,23 @@
+{
+    "email":"E-mail",
+    "password":"Password",
+    "login":"Log in", 
+    "settings":"Or login through other services",
+    
+    "settings_Subscription_title":"Premium subscription",
+    "settings_Subscription_subtitle1":"Only for",
+    "settings_Subscription_subtitle2":"a month",
+    "settings_Voice_History":"Listening history",
+    "settings_Voice_History_error":"You have not listened anything",
+    "settings_Voice_History_loading":"Loading your listening history",
+    "settings_App_Settings":"App settings",
+    "settings_App_Settings_subtitle":"Interface language, notifications, theme settings and etc.",
+    "settings_News_Streaming_Settings":"News streaming settings",
+    "settings_News_Streaming_Settings_subtitle":"Types of news, hide title, play extended editions and etc.",
+    "settings_Info_Center_Settings":"Info Center",
+    "settings_Info_Center_Settings_subtitle":"Confidentialty policy, User agreement and etc.",
+    "settings_Help_Support":"Help and Support",
+    "settings_Rate_App":"Rate App",
+    "settings_Invite":"Invite friends"
+
+}
